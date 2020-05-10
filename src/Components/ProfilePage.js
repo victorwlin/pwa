@@ -11,6 +11,7 @@ const ProfilePage = () => {
     return (
         <div>
             <div className="ui container">
+                <h1>Profile</h1>
                 <p>{email}</p>
             </div>
             <button
