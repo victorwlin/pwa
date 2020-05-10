@@ -3,17 +3,18 @@ import { Router } from "@reach/router";
 
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
-import ProfilePage from "./ProfilePage";
 import PasswordReset from "./PasswordReset";
+import Tracking from './Tracking/Tracking';
 
 import { UserContext } from "../providers/UserProvider";
+
 
 function Application() {
   const user = useContext(UserContext);
   
   return (
     user ?
-    <ProfilePage /> :
+    <Tracking /> :
     <Router>
       <SignIn path="/" />
       <SignUp path="signUp" />
