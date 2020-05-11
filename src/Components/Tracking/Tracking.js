@@ -2,7 +2,7 @@ import React from "react";
 
 import Input from "./Input";
 import Render from "./Render";
-import { firestore } from "../../firebase";
+import { auth, firestore } from "../../firebase";
 import { UserContext } from "../../providers/UserProvider";
 
 class Tracking extends React.Component {
@@ -12,7 +12,7 @@ class Tracking extends React.Component {
     // The purpose of this file is to store a collection of entries
     // for the Render file to render
     state = { entries: {} };
-    
+
     // Pull from Firestore and jam into state
     componentDidUpdate() {
         firestore.collection(this.context.email).get().then((querySnapshot) => {
@@ -49,9 +49,33 @@ class Tracking extends React.Component {
 
     render() {
         return (
-            <div className="ui container" style={{ marginTop: "10px" }}>
-                <Input onSubmit={this.onEntrySubmit} />
-                <Render entries={this.state.entries} />
+            <div>
+                <div className="ui left vertical inverted sidebar labeled icon menu">
+                    <a className="item">
+                        <i
+                            className="home icon"
+                        ></i>
+                        Weight Tracker
+                    </a>
+                </div>
+
+                <div className="ui icon borderless menu">
+                    <a className="item">
+                        <i className="weight icon"></i>
+                    </a>
+                    <div className="right menu">
+                        <a
+                            className="ui item"
+                            onClick={() => auth.signOut()}
+                        >
+                            Sign Out
+                        </a>
+                    </div>
+                </div>
+                <div className="ui container" style={{ marginTop: "10px" }}>
+                    <Input onSubmit={this.onEntrySubmit} />
+                    <Render entries={this.state.entries} />
+                </div>
             </div>
         );
     }

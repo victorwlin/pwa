@@ -1,6 +1,52 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
+
+import { firestore } from "../../firebase";
+import { UserContext } from "../../providers/UserProvider";
 
 const Render = props => {    
+    const [entries, setEntries] = useState({});
+    
+    const user = useContext(UserContext);
+    const { email } = user;
+
+    const weights = {};
+    const displayDates = [];
+    let displayWeights = [];
+
+    useEffect(
+        () => {
+            // Pull data from Firestore and puts into weights
+            // variable as object
+            firestore.collection(email).onSnapshot((querySnapshot) => {
+                
+                querySnapshot.forEach(doc => {
+                    const date = doc.id;
+                    weights[date] = doc.data().weight;
+                });
+                
+                // Create array corresponding to the last 14 days
+                // with 0 in place of missing weights
+                displayWeights = displayDates.map(element => {
+                    if (weights[element]) {
+                        return weights[element];
+                    } else {
+                        return 0;
+                    }
+                });
+
+                // Combine displayDates and displayWeights into one object
+                const combined = {};
+                for (let i = 0; i < displayDates.length; i++) {
+                    combined[displayDates[i]] = displayWeights[i];
+                }
+                
+                setEntries(combined);
+
+            });
+        },
+        []
+    );
+
     const showDates = () => {
         // Get today's date and deconstruct it
         const today = new Date();
@@ -40,8 +86,6 @@ const Render = props => {
 
 
         // Change array of date objects into something easier to read
-        const displayDates = [];
-        
         dateArr.forEach(element => {
             const { year, month, date } = deconstructDate(element);
 
@@ -65,32 +109,31 @@ const Render = props => {
 
             displayDates.push(`${displayDate} ${displayMonth} ${year}`);
         });
-        
-        // Render dates array
+
+     
         return (
-            displayDates.map(element => {
+            Object.keys(entries).map(obj => {
                 return (
-                    <tr key={element}>
-                        <td>{element}</td>
-                        <td></td>
+                    <tr key={obj}>
+                        <td>{obj}</td>
+                        <td>{entries[obj]}</td>
                     </tr>
                 );
             })
         );
     };
 
-
     // Render table
     return (
         <table className="ui sortable celled table unstackable">
             <thead>
                 <tr>
-                    <th className="sorted descending">Date</th>
+                    <th>Date</th>
                     <th>Weight</th>
                 </tr>
             </thead>
             <tbody>
-                    {showDates()}
+                {showDates()}
             </tbody>
         </table>
     );

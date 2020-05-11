@@ -23,7 +23,8 @@ class Input extends React.Component {
     };
 
     onWeightChange = event => {
-        this.setState({ entry: { ...this.state.entry, weight: event.target.value } });
+        const weightAsNum = Number(Math.round(parseFloat(event.target.value + "e" + 2)) + "e-" + 2);
+        this.setState({ entry: { ...this.state.entry, weight: weightAsNum } });
     };
 
 
@@ -36,11 +37,31 @@ class Input extends React.Component {
         
         // Check if there is a date and submit to Tracking
         if (this.state.entry.date) {
-            this.props.onSubmit({...this.state.entry});
+            // this.props.onSubmit({...this.state.entry});
+
+            // Format dates
+            const year = this.state.entry.date.substring(0, 4);
+            const month = this.state.entry.date.substring(5, 7);
+            const displayMonth =
+                    (month == 1) ? "JAN" :
+                    (month == 2) ? "FEB" :
+                    (month == 3) ? "MAR" :
+                    (month == 4) ? "APR" :
+                    (month == 5) ? "MAY" :
+                    (month == 6) ? "JUN" :
+                    (month == 7) ? "JUL" :
+                    (month == 8) ? "AUG" :
+                    (month == 9) ? "SEP" :
+                    (month == 10) ? "OCT" :
+                    (month == 11) ? "NOV" :
+                    "DEC";
+            const date = parseInt(this.state.entry.date.substring(8, 10));
+            const displayDate = (date < 10) ? (`0${date}`) : date;
+    
+            const formattedDate = `${displayDate} ${displayMonth} ${year}`;
 
             // Submit to firestore
-            console.log(this.context.email);
-            firestore.collection(this.context.email).doc(this.state.entry.date).set({
+            firestore.collection(this.context.email).doc(formattedDate).set({
                 weight: this.state.entry.weight
             })
 
