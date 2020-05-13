@@ -28,8 +28,7 @@ class Input extends React.Component {
     };
 
 
-    // This method passes the Input (child) state into the App (parent)
-    // state
+    // This method submits the entry to Firestore
     onFormSubmit = event => {
         // This prevents the page from refreshing every time something is
         // submitted
@@ -37,8 +36,6 @@ class Input extends React.Component {
         
         // Check if there is a date and submit to Tracking
         if (this.state.entry.date) {
-            // this.props.onSubmit({...this.state.entry});
-
             // Format dates
             const year = this.state.entry.date.substring(0, 4);
             const month = this.state.entry.date.substring(5, 7);
@@ -60,16 +57,18 @@ class Input extends React.Component {
     
             const formattedDate = `${displayDate} ${displayMonth} ${year}`;
 
-            // Submit to firestore
+            // Submit to Firestore
             firestore.collection(this.context.email).doc(formattedDate).set({
                 weight: this.state.entry.weight
             })
 
             // Reset form fields to empty
             this.setState({ entry: { date: "", weight: "" } });
+
         } else {
             window.alert("Please enter a date");
         }
+        
     };
 
     render() {
